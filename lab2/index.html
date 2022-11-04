@@ -33,6 +33,7 @@
     tel: <input id="input_10" type="tel" placeholder="333-333-333"><br>
     date: <input id="input_11" type="date" placeholder="2022-04-11"><br>
     wybór dnia z dzisiejszego tygodnia <input type="date" id="input_12"><br>
+    kolor: <input id="input_15" type="color" placeholder="#ffffff"><br>
     <br>
     <button id="reset_btn">reset</button>
     <script>
@@ -57,7 +58,9 @@
             document.getElementById("input_8").value = "/etc/lego"
             document.getElementById("input_9").value = "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"
             document.getElementById("input_10").value = "333-333-333"
-            document.getElementById("input_11").value = new Date().toISOString().split('T')[0]
+            document.getElementById("input_11").value = new Date().toISOString().split('T')[0];
+            document.getElementById("input_12").value = minDate.toISOString().split('T')[0];
+            document.getElementById("input_15").value = "#ffffff"
         })
     </script>
 </body>

@@ -26,6 +26,23 @@
 
     <div id="zad2"></div>
 
-    <script></script>
+    <script>
+      // logika dodawania nowego elementu
+      const input = document.getElementById("add_el_input");
+      const listEl = document.getElementById("list");
+      input.addEventListener("keyup", (ev) => {
+        if (ev.key === "Enter") {
+          let el = document.createElement("li");
+          el.innerText = input.value;
+          el.setAttribute("draggable", "true");
+          el.classList.add("droppable");
+          el.id = uuidv4();
+          var randomColor = Math.floor(Math.random() * 16777215).toString(16);
+          el.style = "background: #" + randomColor;
+          listEl.appendChild(el);
+          input.value = "";
+        }
+      });
+    </script>
   </body>
 </html>

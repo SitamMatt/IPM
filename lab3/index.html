@@ -14,10 +14,23 @@
     }
     #zad1 {
       width: 30%;
+      /* border: 1px dotted black; */
     }
 
     #zad2{
       width: 70%;
+      /* border: 1px dotted black; */
+      display: flex;
+      flex-direction: column;
+    }
+
+    #platform{
+      height: 80vh;
+      background: yellow;
+    }
+
+    #generator_wrapper{
+      height: 20vh;
     }
   </style>
   <body>
@@ -40,6 +53,8 @@
     </div>
 
     <script>
+      
+
       // logika dodawania nowego elementu
       const input = document.getElementById("add_el_input");
       const listEl = document.getElementById("list");

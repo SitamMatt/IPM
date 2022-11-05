@@ -61,17 +61,21 @@
       // logika dla dodawania nowego elementu zad2
       const genBtn = document.getElementById("generate_btn");
       const genParent = document.getElementById("generator_parent");
+      let elementLeftParent = true;
       const zad2 = document.getElementById("zad2");
 
       genBtn.addEventListener("click", () => {
-        const newEl = document.createElement("div");
-        newEl.setAttribute("draggable", "true");
-        var randomColor = Math.floor(Math.random() * 16777215).toString(16);
-        newEl.style = "background: #" + randomColor;
-        newEl.classList.add("element");
-        newEl.classList.add("droppable");
-        newEl.id = uuidv4();
-        genParent.appendChild(newEl);
+        if(elementLeftParent){
+          elementLeftParent = false;
+          const newEl = document.createElement("div");
+          newEl.setAttribute("draggable", "true");
+          let styl = "background: " + getRandomColor();
+          newEl.style = styl
+          newEl.classList.add("element");
+          newEl.classList.add("droppable");
+          newEl.id = uuidv4();
+          genParent.appendChild(newEl);
+        }
       });
 
       // logika przesuwania elementów zad2
@@ -98,20 +102,20 @@
         });
 
         zad2.addEventListener("drop", ({ target }) => {
-          console.log(target.classList);
           if (target.id == "platform") {
             dragged.remove(dragged);
             target.appendChild(dragged);
+            elementLeftParent = true;
           } else if (
             target.classList.contains("droppable") &&
             target.id !== id
           ) {
-            console.log("haha");
             if (index > indexDrop) {
               target.before(dragged);
             } else {
               target.after(dragged);
             }
+            elementLeftParent = true;
           }
         });
       }
@@ -136,8 +140,8 @@
           el.setAttribute("draggable", "true");
           el.classList.add("droppable");
           el.id = uuidv4();
-          var randomColor = Math.floor(Math.random() * 16777215).toString(16);
-          el.style = "background: #" + randomColor;
+          let styl = "background: " + getRandomColor();
+          el.style = styl
           listEl.appendChild(el);
           input.value = "";
         }
@@ -188,6 +192,15 @@
             (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
           ).toString(16)
         );
+      }
+
+      function getRandomColor() {
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
       }
     </script>
   </body>

@@ -32,6 +32,11 @@
     #generator_wrapper{
       height: 20vh;
     }
+
+    .element{
+      width: 60vw;
+      height: 10vh;
+    }
   </style>
   <body>
     <div id="zad1">
@@ -48,12 +53,23 @@
       </div>
       <div id="generator_wrapper">
         <button id="generate_btn">Generuj klocek</button>
+        <div id="generator_parent"></div>
 
       </div>
     </div>
 
     <script>
-      
+      // logika dla dodawania nowego elementu zad2
+      const genBtn = document.getElementById("generate_btn")
+      const genParent = document.getElementById("generator_parent")
+
+      genBtn.addEventListener("click", () => {
+        const newEl = document.createElement("div")
+        var randomColor = Math.floor(Math.random() * 16777215).toString(16);
+        newEl.style = "background: #" + randomColor;
+        newEl.classList.add("element")
+        genParent.appendChild(newEl);
+      })
 
       // logika dodawania nowego elementu
       const input = document.getElementById("add_el_input");

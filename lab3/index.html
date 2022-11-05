@@ -17,24 +17,26 @@
       /* border: 1px dotted black; */
     }
 
-    #zad2{
+    #zad2 {
       width: 70%;
       /* border: 1px dotted black; */
       display: flex;
       flex-direction: column;
     }
 
-    #platform{
+    #platform {
       height: 80vh;
       background: yellow;
+      display: flex;
+      flex-direction: column-reverse;
     }
 
-    #generator_wrapper{
+    #generator_wrapper {
       height: 20vh;
     }
 
-    .element{
-      width: 60vw;
+    .element {
+      width: 70vw;
       height: 10vh;
     }
   </style>
@@ -48,30 +50,83 @@
     </div>
 
     <div id="zad2">
-      <div id="platform">
-
-      </div>
+      <div id="platform"></div>
       <div id="generator_wrapper">
         <button id="generate_btn">Generuj klocek</button>
         <div id="generator_parent"></div>
-
       </div>
     </div>
 
     <script>
       // logika dla dodawania nowego elementu zad2
-      const genBtn = document.getElementById("generate_btn")
-      const genParent = document.getElementById("generator_parent")
+      const genBtn = document.getElementById("generate_btn");
+      const genParent = document.getElementById("generator_parent");
+      const zad2 = document.getElementById("zad2");
 
       genBtn.addEventListener("click", () => {
-        const newEl = document.createElement("div")
+        const newEl = document.createElement("div");
+        newEl.setAttribute("draggable", "true");
         var randomColor = Math.floor(Math.random() * 16777215).toString(16);
         newEl.style = "background: #" + randomColor;
-        newEl.classList.add("element")
+        newEl.classList.add("element");
+        newEl.classList.add("droppable");
+        newEl.id = uuidv4();
         genParent.appendChild(newEl);
-      })
+      });
+
+      // logika przesuwania elementów zad2
+      {
+        let dragged;
+        let id;
+        let index;
+        let indexDrop;
+        let list;
+
+        zad2.addEventListener("dragstart", ({ target }) => {
+          dragged = target;
+          id = target.id;
+          list = target.parentNode.children;
+          for (let i = 0; i < list.length; i += 1) {
+            if (list[i] === dragged) {
+              index = i;
+            }
+          }
+        });
+
+        zad2.addEventListener("dragover", (event) => {
+          event.preventDefault();
+        });
+
+        zad2.addEventListener("drop", ({ target }) => {
+          console.log(target.classList);
+          if (target.id == "platform") {
+            dragged.remove(dragged);
+            target.appendChild(dragged);
+          } else if (
+            target.classList.contains("droppable") &&
+            target.id !== id
+          ) {
+            console.log("haha");
+            if (index > indexDrop) {
+              target.before(dragged);
+            } else {
+              target.after(dragged);
+            }
+          }
+        });
+      }
+
+      function uuidv4() {
+        return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
+          (
+            c ^
+            (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+          ).toString(16)
+        );
+      }
 
       // logika dodawania nowego elementu
+      const zad1 = document.getElementById("zad1");
       const input = document.getElementById("add_el_input");
       const listEl = document.getElementById("list");
       input.addEventListener("keyup", (ev) => {
@@ -95,7 +150,7 @@
       let indexDrop;
       let list;
 
-      document.addEventListener("dragstart", ({ target }) => {
+      zad1.addEventListener("dragstart", ({ target }) => {
         dragged = target;
         id = target.id;
         list = target.parentNode.children;
@@ -106,11 +161,11 @@
         }
       });
 
-      document.addEventListener("dragover", (event) => {
+      zad1.addEventListener("dragover", (event) => {
         event.preventDefault();
       });
 
-      document.addEventListener("drop", ({ target }) => {
+      zad1.addEventListener("drop", ({ target }) => {
         if (target.className == "droppable" && target.id !== id) {
           dragged.remove(dragged);
           for (let i = 0; i < list.length; i += 1) {

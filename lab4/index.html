@@ -28,6 +28,8 @@
         </tr>
     </table>
 
+    <button onclick="empty()">Wyczyść</button>
+
     <script>
         //prefixes of implementation that we want to test
         window.indexedDB =
@@ -83,6 +85,24 @@
         const btn = document.getElementById("add-btn");
         const table = document.getElementById("data-table");
 
+        function empty(){
+            var request = db
+            .transaction(["contractors"], "readwrite")
+            .objectStore("contractors")
+            .clear()
+
+            request.onsuccess = function (event) {
+                console.log("Client added");
+                renderTable();
+            };
+
+            request.onerror = function (event) {
+                alert(
+                    "Unable to add data\r\ user with that email aready exist in your database! "
+                );
+            };
+        }
+
         function add(ev){
             ev.preventDefault();
 
@@ -103,7 +123,33 @@
 
             request.onsuccess = function (event) {
                 console.log("Client added");
-                // drawTable();
+                renderTable();
+            };
+
+            request.onerror = function (event) {
+                alert(
+                    "Unable to add data\r\ user with that email aready exist in your database! "
+                );
+            };
+        }
+
+        function remove(ev){
+            console.log(ev)
+            let btnEl = ev.target;
+            let colEl = btnEl.parentElement;
+            let rowEl = colEl.parentElement;
+
+            let key = rowEl.firstChild.innerText
+            console.log(key)
+
+            var request = db
+            .transaction(["contractors"], "readwrite")
+            .objectStore("contractors")
+            .delete(Number(key))
+
+            request.onsuccess = function (event) {
+                console.log("Client added");
+                renderTable();
             };
 
             request.onerror = function (event) {
@@ -114,6 +160,8 @@
         }
 
         function renderTable(){
+            table.innerHTML = ""
+
             const objectStore = db.transaction('contractors').objectStore('contractors');
             objectStore.openCursor().onsuccess = (event) => {
                 const cursor = event.target.result;
@@ -179,7 +227,7 @@
             }
 
             function renderDeleteButton(rowEl){
-                let html = `<button onclick="delete()">Usuń</button>`;
+                let html = `<button onclick="remove(event)">Usuń</button>`;
                 let el = document.createElement("td");
                 el.innerHTML = html;
                 rowEl.appendChild(el)

@@ -24,6 +24,7 @@
             <th>Nazwa</th>
             <th>Nip</th>
             <th>Dodano</th>
+            <th>Akcja - Usuń</th>
         </tr>
     </table>
 
@@ -132,6 +133,7 @@
                 addColumn(rowEl, name)
                 addColumn(rowEl, nip)
                 addColumn(rowEl, created)
+                renderDeleteButton(rowEl)
 
                 table.appendChild(rowEl)
 
@@ -174,6 +176,13 @@
                 let col = document.createElement("td");
                 col.innerText = value
                 row.appendChild(col)
+            }
+
+            function renderDeleteButton(rowEl){
+                let html = `<button onclick="delete()">Usuń<button>`;
+                let el = document.createElement("td");
+                el.innerHTML = html;
+                rowEl.appendChild(el)
             }
         }
     </script>

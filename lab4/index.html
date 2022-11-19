@@ -6,13 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lab4</title>
 </head>
+<style>
+    #add-form-wrapper{
+        border: 1px solid black;
+    }
+
+    #data-table{
+        border: 1px solid black;
+    }
+    #edit-form-wrapper{
+        border: 1px solid black;
+    }
+</style>
 <body>
     <h1>Baza kontrehentów</h1>
 
-    <div>
+    <div id="add-form-wrapper">
         <form id="add-form" onsubmit="return add(event)">
-            Nazwa: <input id="" type="text">
-            Nip: <input type="text">
+            Nazwa: <input id="" type="text"><br>
+            Nip: <input type="text"><br>
             <input type="submit" value="Dodaj">
         </form>
        
@@ -20,15 +32,25 @@
 
     <table id="data-table">
         <tr>
-            <th>Id</th>
+            <th onblur="console.log('aa')" contenteditable>Id</th>
             <th>Nazwa</th>
             <th>Nip</th>
             <th>Dodano</th>
             <th>Akcja - Usuń</th>
+            <th>Akcja - Edytuj</th>
         </tr>
     </table>
 
     <button onclick="empty()">Wyczyść</button>
+
+    <div id="edit-form-wrapper">
+        <form id="edit-form" onsubmit="return edit(event)" hidden>
+            Nazwa: <input type="text">
+            Nip: <input type="text">
+            <input type="hidden">
+            <input type="submit" value="Aktualizuj">
+        </form>
+    </div>
 
     <script>
         //prefixes of implementation that we want to test
@@ -75,15 +97,96 @@
             objectStore.createIndex("name", "name", { unique: true });
             objectStore.createIndex("nip", "nip", { unique: true });
             objectStore.createIndex("created", "created", { unique: false });
-
-            // for (var i in clientData) {
-            // objectStore.add(clientData[i]);
-            // }
         };
 
 
         const btn = document.getElementById("add-btn");
         const table = document.getElementById("data-table");
+
+        function edit(ev){
+            ev.preventDefault();
+
+            let form = document.getElementById("edit-form");
+
+            let contractor = {
+                name: form[0].value,
+                nip: form[1].value,
+                created: new Date()
+            }
+
+            let key = Number(form[2].value)
+
+            console.log(contractor)
+
+            const objectStore = db.transaction(["contractors"], "readwrite").objectStore('contractors');
+            objectStore.openCursor().onsuccess = (event) => {
+                const cursor = event.target.result;
+                
+                if (!cursor) {
+                    // No more items to iterate through, we quit.
+                    // note.appendChild(createListItem('Entries all displayed.'));
+                    console.log("no cursors")
+                    return;
+                }
+
+                console.log(key)
+                console.log(cursor.key)
+
+                if(key === cursor.key){
+                    cursor.value.name = contractor.name
+                    cursor.value.nip = contractor.nip
+                    let req = cursor.update(cursor.value)
+                    request.onsuccess = () => {
+                        console.log('A better album year?');
+                    };
+                }
+
+                cursor.continue();
+            };
+
+            form.setAttribute("hidden", true)
+
+            renderTable()
+        }
+
+        function renderEditForm(ev){
+            const wrapper = document.getElementById("edit-form-wrapper");
+
+            console.log(ev)
+            let btnEl = ev.target;
+            let colEl = btnEl.parentElement;
+            let rowEl = colEl.parentElement;
+
+            let key = rowEl.firstChild.innerText
+            console.log(key)
+
+            var request = db
+            .transaction(["contractors"], "readwrite")
+            .objectStore("contractors")
+            .get(Number(key))
+
+            request.onsuccess = function (event) {
+                console.log("Client added");
+                let result = request.result;
+                console.log(result)
+                let form = document.getElementById("edit-form");
+
+                form.removeAttribute("hidden")
+
+                form[0].value = result.name
+                form[1].value = result.nip
+                form[2].value = key
+            };
+
+            request.onerror = function (event) {
+                alert(
+                    "Unable to add data\r\ user with that email aready exist in your database! "
+                );
+            };
+
+           
+
+        }
 
         function empty(){
             var request = db
@@ -110,7 +213,7 @@
 
             let contractor = {
                 name: form[0].value,
-                nip: form[0].value,
+                nip: form[1].value,
                 created: new Date()
             }
 
@@ -161,6 +264,7 @@
 
         function renderTable(){
             table.innerHTML = ""
+            renderHeader(table)
 
             const objectStore = db.transaction('contractors').objectStore('contractors');
             objectStore.openCursor().onsuccess = (event) => {
@@ -182,6 +286,7 @@
                 addColumn(rowEl, nip)
                 addColumn(rowEl, created)
                 renderDeleteButton(rowEl)
+                renderEditButton(rowEl)
 
                 table.appendChild(rowEl)
 
@@ -231,6 +336,23 @@
                 let el = document.createElement("td");
                 el.innerHTML = html;
                 rowEl.appendChild(el)
+            }
+
+            function renderEditButton(rowEl){
+                let html = `<button onclick="renderEditForm(event)">Edytuj</button>`;
+                let el = document.createElement("td");
+                el.innerHTML = html;
+                rowEl.appendChild(el)
+            }
+
+            function renderHeader(table){
+                table.innerHTML = `<tr>
+                                        <th onblur="console.log('aa')" contenteditable>Id</th>
+                                        <th>Nazwa</th>
+                                        <th>Nip</th>
+                                        <th>Dodano</th>
+                                        <th>Akcja - Usuń</th>
+                                    </tr>`
             }
         }
     </script>

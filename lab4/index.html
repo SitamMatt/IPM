@@ -32,7 +32,7 @@
 
     <table id="data-table">
         <tr>
-            <th onblur="console.log('aa')" contenteditable>Id</th>
+            <th>Id</th>
             <th>Nazwa</th>
             <th>Nip</th>
             <th>Dodano</th>
@@ -76,12 +76,12 @@
         let request = window.indexedDB.open("newDatabase", 1);
 
         request.onerror = function (event) {
-            console.log("error: The database is opened failed");
+            alert("error: The database is opened failed");
         };
 
         request.onsuccess = function (event) {
             db = request.result;
-            console.log("success: The database " + db + " is opened successfully");
+            alert("success: The database " + db + " is opened successfully");
 
             renderTable();
         };
@@ -114,14 +114,11 @@
 
             let key = Number(form[2].value)
 
-            console.log(contractor)
-
             const objectStore = db.transaction(["contractors"], "readwrite").objectStore('contractors');
             objectStore.openCursor().onsuccess = (event) => {
                 const cursor = event.target.result;
                 
                 if (!cursor) {
-                    console.log("no cursors")
                     return;
                 }
 
@@ -145,13 +142,11 @@
         function renderEditForm(ev){
             const wrapper = document.getElementById("edit-form-wrapper");
 
-            console.log(ev)
             let btnEl = ev.target;
             let colEl = btnEl.parentElement;
             let rowEl = colEl.parentElement;
 
             let key = rowEl.firstChild.innerText
-            console.log(key)
 
             var request = db
             .transaction(["contractors"], "readwrite")
@@ -159,9 +154,7 @@
             .get(Number(key))
 
             request.onsuccess = function (event) {
-                console.log("Client added");
                 let result = request.result;
-                console.log(result)
                 let form = document.getElementById("edit-form");
 
                 form.removeAttribute("hidden")
@@ -210,8 +203,6 @@
                 created: new Date()
             }
 
-            console.log(contractor)
-
             var request = db
             .transaction(["contractors"], "readwrite")
             .objectStore("contractors")
@@ -230,13 +221,11 @@
         }
 
         function remove(ev){
-            console.log(ev)
             let btnEl = ev.target;
             let colEl = btnEl.parentElement;
             let rowEl = colEl.parentElement;
 
             let key = rowEl.firstChild.innerText
-            console.log(key)
 
             var request = db
             .transaction(["contractors"], "readwrite")
@@ -263,7 +252,6 @@
             objectStore.openCursor().onsuccess = (event) => {
                 const cursor = event.target.result;
                 if (!cursor) {
-                    console.log("no cursors")
                     return;
                 }
 
@@ -305,7 +293,7 @@
 
             function renderHeader(table){
                 table.innerHTML = `<tr>
-                                        <th onblur="console.log('aa')" contenteditable>Id</th>
+                                        <th>Id</th>
                                         <th>Nazwa</th>
                                         <th>Nip</th>
                                         <th>Dodano</th>

@@ -53,14 +53,12 @@
     </div>
 
     <script>
-        //prefixes of implementation that we want to test
         window.indexedDB =
             window.indexedDB ||
             window.mozIndexedDB ||
             window.webkitIndexedDB ||
             window.msIndexedDB;
 
-        //prefixes of window.IDB objects
         window.IDBTransaction =
             window.IDBTransaction ||
             window.webkitIDBTransaction ||
@@ -123,21 +121,16 @@
                 const cursor = event.target.result;
                 
                 if (!cursor) {
-                    // No more items to iterate through, we quit.
-                    // note.appendChild(createListItem('Entries all displayed.'));
                     console.log("no cursors")
                     return;
                 }
-
-                console.log(key)
-                console.log(cursor.key)
 
                 if(key === cursor.key){
                     cursor.value.name = contractor.name
                     cursor.value.nip = contractor.nip
                     let req = cursor.update(cursor.value)
-                    request.onsuccess = () => {
-                        console.log('A better album year?');
+                    req.onsuccess = () => {
+                        alert("Zaktualizowano użytkownika")
                     };
                 }
 
@@ -195,13 +188,13 @@
             .clear()
 
             request.onsuccess = function (event) {
-                console.log("Client added");
+                alert("Wyczyszczono bazę")
                 renderTable();
             };
 
             request.onerror = function (event) {
                 alert(
-                    "Unable to add data\r\ user with that email aready exist in your database! "
+                    "Error"
                 );
             };
         }
@@ -225,13 +218,13 @@
             .add(contractor);
 
             request.onsuccess = function (event) {
-                console.log("Client added");
+                alert("Dodano użytkownika")
                 renderTable();
             };
 
             request.onerror = function (event) {
                 alert(
-                    "Unable to add data\r\ user with that email aready exist in your database! "
+                    "Error"
                 );
             };
         }
@@ -251,13 +244,13 @@
             .delete(Number(key))
 
             request.onsuccess = function (event) {
-                console.log("Client added");
+                alert("Usunięto uzytkownika")
                 renderTable();
             };
 
             request.onerror = function (event) {
                 alert(
-                    "Unable to add data\r\ user with that email aready exist in your database! "
+                    "Error"
                 );
             };
         }
@@ -269,10 +262,7 @@
             const objectStore = db.transaction('contractors').objectStore('contractors');
             objectStore.openCursor().onsuccess = (event) => {
                 const cursor = event.target.result;
-                // Check if there are no (more) cursor items to iterate through
                 if (!cursor) {
-                    // No more items to iterate through, we quit.
-                    // note.appendChild(createListItem('Entries all displayed.'));
                     console.log("no cursors")
                     return;
                 }
@@ -290,38 +280,6 @@
 
                 table.appendChild(rowEl)
 
-                
-                
-                // Check which suffix the deadline day of the month needs
-                // const { hours, minutes, day, month, year, notified, taskTitle } = cursor.value;
-                // const ordDay = ordinal(day);
-
-                // // Build the to-do list entry and put it into the list item.
-                // const toDoText = `${taskTitle} — ${hours}:${minutes}, ${month} ${ordDay} ${year}.`;
-                // const listItem = createListItem(toDoText);
-
-                // if (notified === 'yes') {
-                //     listItem.style.textDecoration = 'line-through';
-                //     listItem.style.color = 'rgba(255, 0, 0, 0.5)';
-                // }
-
-                // // Put the item item inside the task list
-                // taskList.appendChild(listItem);
-
-                // // Create a delete button inside each list item,
-                // const deleteButton = document.createElement('button');
-                // listItem.appendChild(deleteButton);
-                // deleteButton.textContent = 'X';
-                
-                // // Set a data attribute on our delete button to associate the task it relates to.
-                // deleteButton.setAttribute('data-task', taskTitle);
-                
-                // // Associate action (deletion) when clicked
-                // deleteButton.onclick = (event) => {
-                //     deleteItem(event);
-                // };
-
-                // continue on to the next item in the cursor
                 cursor.continue();
             };
 

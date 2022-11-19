@@ -59,6 +59,8 @@
         request.onsuccess = function (event) {
             db = request.result;
             console.log("success: The database " + db + " is opened successfully");
+
+            renderTable();
         };
 
         request.onupgradeneeded = function (event) {
@@ -78,7 +80,7 @@
 
 
         const btn = document.getElementById("add-btn");
-        const table = document.getElementById("table");
+        const table = document.getElementById("data-table");
 
         function add(ev){
             ev.preventDefault();
@@ -108,6 +110,71 @@
                     "Unable to add data\r\ user with that email aready exist in your database! "
                 );
             };
+        }
+
+        function renderTable(){
+            const objectStore = db.transaction('contractors').objectStore('contractors');
+            objectStore.openCursor().onsuccess = (event) => {
+                const cursor = event.target.result;
+                // Check if there are no (more) cursor items to iterate through
+                if (!cursor) {
+                    // No more items to iterate through, we quit.
+                    // note.appendChild(createListItem('Entries all displayed.'));
+                    console.log("no cursors")
+                    return;
+                }
+
+                const key = cursor.key;
+                const { name, nip, created } = cursor.value;
+
+                let rowEl = document.createElement("tr");
+                addColumn(rowEl, key)
+                addColumn(rowEl, name)
+                addColumn(rowEl, nip)
+                addColumn(rowEl, created)
+
+                table.appendChild(rowEl)
+
+                
+                
+                // Check which suffix the deadline day of the month needs
+                // const { hours, minutes, day, month, year, notified, taskTitle } = cursor.value;
+                // const ordDay = ordinal(day);
+
+                // // Build the to-do list entry and put it into the list item.
+                // const toDoText = `${taskTitle} — ${hours}:${minutes}, ${month} ${ordDay} ${year}.`;
+                // const listItem = createListItem(toDoText);
+
+                // if (notified === 'yes') {
+                //     listItem.style.textDecoration = 'line-through';
+                //     listItem.style.color = 'rgba(255, 0, 0, 0.5)';
+                // }
+
+                // // Put the item item inside the task list
+                // taskList.appendChild(listItem);
+
+                // // Create a delete button inside each list item,
+                // const deleteButton = document.createElement('button');
+                // listItem.appendChild(deleteButton);
+                // deleteButton.textContent = 'X';
+                
+                // // Set a data attribute on our delete button to associate the task it relates to.
+                // deleteButton.setAttribute('data-task', taskTitle);
+                
+                // // Associate action (deletion) when clicked
+                // deleteButton.onclick = (event) => {
+                //     deleteItem(event);
+                // };
+
+                // continue on to the next item in the cursor
+                cursor.continue();
+            };
+
+            function addColumn(row, value){
+                let col = document.createElement("td");
+                col.innerText = value
+                row.appendChild(col)
+            }
         }
     </script>
 </body>

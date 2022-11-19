@@ -28,8 +28,87 @@
     </table>
 
     <script>
+        //prefixes of implementation that we want to test
+        window.indexedDB =
+            window.indexedDB ||
+            window.mozIndexedDB ||
+            window.webkitIndexedDB ||
+            window.msIndexedDB;
+
+        //prefixes of window.IDB objects
+        window.IDBTransaction =
+            window.IDBTransaction ||
+            window.webkitIDBTransaction ||
+            window.msIDBTransaction;
+        window.IDBKeyRange =
+            window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
+
+        if (!window.indexedDB) {
+            window.alert(
+            "Your browser doesn't support a stable version of IndexedDB."
+            );
+        }
+
+        let db;
+        let request = window.indexedDB.open("newDatabase", 1);
+
+        request.onerror = function (event) {
+            console.log("error: The database is opened failed");
+        };
+
+        request.onsuccess = function (event) {
+            db = request.result;
+            console.log("success: The database " + db + " is opened successfully");
+        };
+
+        request.onupgradeneeded = function (event) {
+            var db = event.target.result;
+            var objectStore = db.createObjectStore("contractors", {
+                autoIncrement: true,
+            });
+
+            objectStore.createIndex("name", "name", { unique: true });
+            objectStore.createIndex("nip", "nip", { unique: true });
+            objectStore.createIndex("created", "created", { unique: false });
+
+            // for (var i in clientData) {
+            // objectStore.add(clientData[i]);
+            // }
+        };
+
+
         const btn = document.getElementById("add-btn");
         const table = document.getElementById("table");
+
+        function add(ev){
+            ev.preventDefault();
+
+            let form = document.getElementById("add-form");
+
+            let contractor = {
+                name: form[0].value,
+                nip: form[0].value,
+                created: new Date()
+            }
+
+            console.log(contractor)
+
+            var request = db
+            .transaction(["contractors"], "readwrite")
+            .objectStore("contractors")
+            .add(contractor);
+
+            request.onsuccess = function (event) {
+                console.log("Client added");
+                // drawTable();
+            };
+
+            request.onerror = function (event) {
+                alert(
+                    "Unable to add data\r\ user with that email aready exist in your database! "
+                );
+            };
+        }
     </script>
 </body>
 </html>

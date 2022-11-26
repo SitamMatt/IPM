@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab4</title>
+</head>
+<style>
+    #add-form-wrapper{
+        border: 1px solid black;
+    }
+
+    #data-table{
+        border: 1px solid black;
+    }
+    #edit-form-wrapper{
+        border: 1px solid black;
+    }
+</style>
+<body>
+    <h1>Baza kontrehentów</h1>
+
+    <div id="add-form-wrapper">
+        <form id="add-form" onsubmit="return add(event)">
+            Nazwa: <input id="" type="text"><br>
+            Nip: <input type="text"><br>
+            <input type="submit" value="Dodaj">
+        </form>
+       
+    </div>
+    
+
+    <table id="data-table">
+        <tr>
+            <th>Id</th>
+            <th>Nazwa</th>
+            <th>Nip</th>
+            <th>Email</th>
+            <th>Kod pocztowy</th>
+            <th>nr dowodu</th>
+            <th>tel</th>
+            <th>Dodano</th>
+            <th>Akcja - Usuń</th>
+            <th>Akcja - Edytuj</th>
+        </tr>
+    </table>
+
+    <button onclick="empty()">Wyczyść</button>
+
+    <div id="edit-form-wrapper">
+        <form id="edit-form" onsubmit="return edit(event)" hidden>
+            Nazwa: <input type="text">
+            Nip: <input type="text">
+            Kod pocztowy: <input type="text">
+            nr dowodu: <input type="text">
+            tel: <input type="text">
+            <input type="hidden">
+            <input type="submit" value="Aktualizuj">
+        </form>
+    </div>
+
+    <script>
+        window.indexedDB =
+            window.indexedDB ||
+            window.mozIndexedDB ||
+            window.webkitIndexedDB ||
+            window.msIndexedDB;
+
+        window.IDBTransaction =
+            window.IDBTransaction ||
+            window.webkitIDBTransaction ||
+            window.msIDBTransaction;
+        window.IDBKeyRange =
+            window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
+
+        if (!window.indexedDB) {
+            window.alert(
+            "Your browser doesn't support a stable version of IndexedDB."
+            );
+        }
+
+        let db;
+        let request = window.indexedDB.open("newDatabase", 1);
+
+        request.onerror = function (event) {
+            alert("error: The database is opened failed");
+        };
+
+        request.onsuccess = function (event) {
+            db = request.result;
+            alert("success: The database " + db + " is opened successfully");
+
+            renderTable();
+        };
+
+        request.onupgradeneeded = function (event) {
+            var db = event.target.result;
+            var objectStore = db.createObjectStore("contractors", {
+                autoIncrement: true,
+            });
+
+            objectStore.createIndex("name", "name", { unique: true });
+            objectStore.createIndex("nip", "nip", { unique: true });
+            objectStore.createIndex("Kod pocztowy", "Kod pocztowy", {unique: false});
+            objectStore.createIndex("nr dowodu", "nr dowodu", {unique: true});
+            objectStore.createIndex("tel", "tel", {unique: true});
+            objectStore.createIndex("created", "created", { unique: false });
+        };
+
+
+        const btn = document.getElementById("add-btn");
+        const table = document.getElementById("data-table");
+
+        function edit(ev){
+            ev.preventDefault();
+
+            let form = document.getElementById("edit-form");
+
+            let contractor = {
+                name: form[0].value,
+                nip: form[1].value,
+                postalCode: form[2].value,
+                idCardNumber: from[3].value,
+                phoneNo: form[4].value,
+                created: new Date()
+            }
+
+            let key = Number(form[5].value)
+
+            const objectStore = db.transaction(["contractors"], "readwrite").objectStore('contractors');
+            objectStore.openCursor().onsuccess = (event) => {
+                const cursor = event.target.result;
+                
+                if (!cursor) {
+                    return;
+                }
+
+                if(key === cursor.key){
+                    cursor.value.name = contractor.name
+                    cursor.value.nip = contractor.nip
+                    let req = cursor.update(cursor.value)
+                    req.onsuccess = () => {
+                        alert("Zaktualizowano użytkownika")
+                    };
+                }
+
+                cursor.continue();
+            };
+
+            form.setAttribute("hidden", true)
+
+            renderTable()
+        }
+
+        function renderEditForm(ev){
+            const wrapper = document.getElementById("edit-form-wrapper");
+
+            let btnEl = ev.target;
+            let colEl = btnEl.parentElement;
+            let rowEl = colEl.parentElement;
+
+            let key = rowEl.firstChild.innerText
+
+            var request = db
+            .transaction(["contractors"], "readwrite")
+            .objectStore("contractors")
+            .get(Number(key))
+
+            request.onsuccess = function (event) {
+                let result = request.result;
+                let form = document.getElementById("edit-form");
+
+                form.removeAttribute("hidden")
+
+                form[0].value = result.name
+                form[1].value = result.nip,
+                form[2].value = result.postalCode,
+                from[3].value = result.idCardNumber,
+                form[4].value = result.phoneNo,
+                form[5].value = key
+            };
+
+            request.onerror = function (event) {
+                alert(
+                    "Unable to add data\r\ user with that email aready exist in your database! "
+                );
+            };
+
+           
+
+        }
+
+        function empty(){
+            var request = db
+            .transaction(["contractors"], "readwrite")
+            .objectStore("contractors")
+            .clear()
+
+            request.onsuccess = function (event) {
+                alert("Wyczyszczono bazę")
+                renderTable();
+            };
+
+            request.onerror = function (event) {
+                alert(
+                    "Error"
+                );
+            };
+        }
+
+        function add(ev){
+            ev.preventDefault();
+
+            let form = document.getElementById("add-form");
+
+            let contractor = {
+                name: form[0].value,
+                nip: form[1].value,
+                created: new Date()
+            }
+
+            var request = db
+            .transaction(["contractors"], "readwrite")
+            .objectStore("contractors")
+            .add(contractor);
+
+            request.onsuccess = function (event) {
+                alert("Dodano użytkownika")
+                renderTable();
+            };
+
+            request.onerror = function (event) {
+                alert(
+                    "Error"
+                );
+            };
+        }
+
+        function remove(ev){
+            let btnEl = ev.target;
+            let colEl = btnEl.parentElement;
+            let rowEl = colEl.parentElement;
+
+            let key = rowEl.firstChild.innerText
+
+            var request = db
+            .transaction(["contractors"], "readwrite")
+            .objectStore("contractors")
+            .delete(Number(key))
+
+            request.onsuccess = function (event) {
+                alert("Usunięto uzytkownika")
+                renderTable();
+            };
+
+            request.onerror = function (event) {
+                alert(
+                    "Error"
+                );
+            };
+        }
+
+        function renderTable(){
+            table.innerHTML = ""
+            renderHeader(table)
+
+            const objectStore = db.transaction('contractors').objectStore('contractors');
+            objectStore.openCursor().onsuccess = (event) => {
+                const cursor = event.target.result;
+                if (!cursor) {
+                    return;
+                }
+
+                const key = cursor.key;
+                const { name, nip, created } = cursor.value;
+
+                let rowEl = document.createElement("tr");
+                addColumn(rowEl, key)
+                addColumn(rowEl, name)
+                addColumn(rowEl, nip)
+                addColumn(rowEl, created)
+                renderDeleteButton(rowEl)
+                renderEditButton(rowEl)
+
+                table.appendChild(rowEl)
+
+                cursor.continue();
+            };
+
+            function addColumn(row, value){
+                let col = document.createElement("td");
+                col.innerText = value
+                row.appendChild(col)
+            }
+
+            function renderDeleteButton(rowEl){
+                let html = `<button onclick="remove(event)">Usuń</button>`;
+                let el = document.createElement("td");
+                el.innerHTML = html;
+                rowEl.appendChild(el)
+            }
+
+            function renderEditButton(rowEl){
+                let html = `<button onclick="renderEditForm(event)">Edytuj</button>`;
+                let el = document.createElement("td");
+                el.innerHTML = html;
+                rowEl.appendChild(el)
+            }
+
+            function renderHeader(table){
+                table.innerHTML = `<tr>
+                                        <th>Id</th>
+                                        <th>Nazwa</th>
+                                        <th>Nip</th>
+                                        <th>Dodano</th>
+                                        <th>Akcja - Usuń</th>
+                                    </tr>`
+            }
+        }
+    </script>
+</body>
+</html>

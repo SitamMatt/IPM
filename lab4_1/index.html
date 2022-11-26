@@ -119,6 +119,17 @@
         const btn = document.getElementById("add-btn");
         const table = document.getElementById("data-table");
 
+        function random(from, to){
+            res = Math.floor(Math.random() * to + from);
+            console.log(res);
+            return res;
+        }
+
+        function randomString(length, chars) {
+            var result = '';
+            for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+            return result;
+        }
         function generateRandom(){
             
         }

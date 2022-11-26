@@ -17,6 +17,14 @@
     #edit-form-wrapper{
         border: 1px solid black;
     }
+
+    input:invalid{
+        border-color: red;
+    }
+
+    input:valid{
+        border-color: green;
+    }
 </style>
 <body>
     <h1>Baza kontrehentów</h1>
@@ -24,11 +32,11 @@
     <div id="add-form-wrapper">
         <form id="add-form" onsubmit="return add(event)">
             Nazwa: <input id="" type="text"><br>
-            Nip: <input type="text"><br>
+            Nip: <input type="text" pattern="[0-9]{3}-[0-9]{3}-[0-9]{2}-[0-9]{2}"><br>
             Email: <input type="email"><br>
-            Kod pocztowy: <input type="text"><br>
-            nr dowodu: <input type="text"><br>
-            tel: <input type="text"><br>
+            Kod pocztowy: <input type="text" pattern="[0-9]{2}-[0-9]{3}"><br>
+            nr dowodu: <input type="text" pattern="[A-Z]{3}[0-9]{6}"><br>
+            tel: <input type="tel"><br>
             <input type="submit" value="Dodaj">
         </form>
        
@@ -56,11 +64,11 @@
     <div id="edit-form-wrapper">
         <form id="edit-form" onsubmit="return edit(event)" hidden>
             Nazwa: <input type="text">
-            Nip: <input type="text">
+            Nip: <input type="text" pattern="[0-9]{3}-[0-9]{3}-[0-9]{2}-[0-9]{2}">
             Email: <input type="email">
-            Kod pocztowy: <input type="text">
-            nr dowodu: <input type="text">
-            tel: <input type="text">
+            Kod pocztowy: <input type="text" pattern="[0-9]{2}-[0-9]{3}">
+            nr dowodu: <input type="text" pattern="[A-Z]{3}[0-9]{6}">
+            tel: <input type="tel">
             <input type="hidden">
             <input type="submit" value="Aktualizuj">
         </form>
@@ -136,7 +144,7 @@
                 contractor = {};
                 contractor.name = randomNames[random(0, 12)];
                 contractor.email = contractor.name.toLowerCase() + '@' + randomString(2, chars) + '.pl';
-                contractor.nip = randomString(10, numbers);
+                contractor.nip = randomString(3, numbers) + "-" + randomString(3, numbers) + "-" + randomString(2, numbers) + "-" + randomString(2, numbers);
                 contractor.postalCode = randomString(2, numbers) + "-" + randomString(3, numbers);
                 contractor.idCardNumber = randomString(3, chars.toUpperCase()) + randomString(6, numbers);
                 contractor.phoneNo = randomString(3, numbers) + "-" + randomString(3, numbers) + "-" + randomString(3, numbers);

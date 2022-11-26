@@ -123,6 +123,19 @@
             
         }
 
+        function save(contractor){
+            var request = db
+            .transaction(["contractors"], "readwrite")
+            .objectStore("contractors")
+            .add(contractor);
+
+            request.onsuccess = function (event) {
+            };
+
+            request.onerror = function (event) {
+
+            };
+        }
         function edit(ev){
             ev.preventDefault();
 

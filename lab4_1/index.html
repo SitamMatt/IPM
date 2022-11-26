@@ -130,8 +130,23 @@
             for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
             return result;
         }
+
         function generateRandom(){
-            
+            const count = 10;
+
+            for(i = 0; i < count; i++){
+                contractor = {};
+                contractor.name = randomNames[random(0, 12)];
+                contractor.email = contractor.name.toLowerCase() + '@' + randomString(2, chars) + '.pl';
+                contractor.nip = randomString(10, numbers);
+                contractor.postalCode = randomString(2, numbers) + "-" + randomString(3, numbers);
+                contractor.idCardNumber = randomString(3, chars.toUpperCase()) + randomString(6, numbers);
+                contractor.phoneNo = randomString(3, numbers) + "-" + randomString(3, numbers) + "-" + randomString(3, numbers);
+                contractor.created = new Date();
+                save(contractor);
+            }
+
+            renderTable();
         }
 
         function save(contractor){
@@ -147,6 +162,7 @@
 
             };
         }
+
         function edit(ev){
             ev.preventDefault();
 

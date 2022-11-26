@@ -106,12 +106,12 @@
                 autoIncrement: true,
             });
 
-            objectStore.createIndex("name", "name", { unique: true });
+            objectStore.createIndex("name", "name", { unique: false });
             objectStore.createIndex("nip", "nip", { unique: true });
             objectStore.createIndex("email", "email", { unique: true });
-            objectStore.createIndex("Kod pocztowy", "Kod pocztowy", {unique: false});
-            objectStore.createIndex("nr dowodu", "nr dowodu", {unique: true});
-            objectStore.createIndex("tel", "tel", {unique: true});
+            objectStore.createIndex("postalCode", "postalCode", {unique: false});
+            objectStore.createIndex("idCardNumber", "idCardNumber", {unique: true});
+            objectStore.createIndex("phoneNo", "phoneNo", {unique: true});
             objectStore.createIndex("created", "created", { unique: false });
         };
 

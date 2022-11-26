@@ -25,6 +25,10 @@
         <form id="add-form" onsubmit="return add(event)">
             Nazwa: <input id="" type="text"><br>
             Nip: <input type="text"><br>
+            Email: <input type="email"><br>
+            Kod pocztowy: <input type="text"><br>
+            nr dowodu: <input type="text"><br>
+            tel: <input type="text"><br>
             <input type="submit" value="Dodaj">
         </form>
        
@@ -47,11 +51,13 @@
     </table>
 
     <button onclick="empty()">Wyczyść</button>
+    <button onclick="generateRandom()">Generuj</button>
 
     <div id="edit-form-wrapper">
         <form id="edit-form" onsubmit="return edit(event)" hidden>
             Nazwa: <input type="text">
             Nip: <input type="text">
+            Email: <input type="email">
             Kod pocztowy: <input type="text">
             nr dowodu: <input type="text">
             tel: <input type="text">
@@ -102,6 +108,7 @@
 
             objectStore.createIndex("name", "name", { unique: true });
             objectStore.createIndex("nip", "nip", { unique: true });
+            objectStore.createIndex("email", "email", { unique: true });
             objectStore.createIndex("Kod pocztowy", "Kod pocztowy", {unique: false});
             objectStore.createIndex("nr dowodu", "nr dowodu", {unique: true});
             objectStore.createIndex("tel", "tel", {unique: true});
@@ -112,6 +119,10 @@
         const btn = document.getElementById("add-btn");
         const table = document.getElementById("data-table");
 
+        function generateRandom(){
+            
+        }
+
         function edit(ev){
             ev.preventDefault();
 
@@ -120,13 +131,14 @@
             let contractor = {
                 name: form[0].value,
                 nip: form[1].value,
-                postalCode: form[2].value,
-                idCardNumber: from[3].value,
-                phoneNo: form[4].value,
+                email: form[2].value,
+                postalCode: form[3].value,
+                idCardNumber: form[4].value,
+                phoneNo: form[5].value,
                 created: new Date()
             }
 
-            let key = Number(form[5].value)
+            let key = Number(form[6].value)
 
             const objectStore = db.transaction(["contractors"], "readwrite").objectStore('contractors');
             objectStore.openCursor().onsuccess = (event) => {
@@ -175,10 +187,11 @@
 
                 form[0].value = result.name
                 form[1].value = result.nip,
-                form[2].value = result.postalCode,
-                from[3].value = result.idCardNumber,
-                form[4].value = result.phoneNo,
-                form[5].value = key
+                form[2].value = result.email,
+                form[3].value = result.postalCode,
+                form[4].value = result.idCardNumber,
+                form[5].value = result.phoneNo,
+                form[6].value = key
             };
 
             request.onerror = function (event) {
@@ -217,6 +230,10 @@
             let contractor = {
                 name: form[0].value,
                 nip: form[1].value,
+                email: form[2].value,
+                postalCode: form[3].value,
+                idCardNumber: form[4].value,
+                phoneNo: form[5].value,
                 created: new Date()
             }
 
@@ -273,12 +290,16 @@
                 }
 
                 const key = cursor.key;
-                const { name, nip, created } = cursor.value;
+                const { name, nip, email, postalCode, idCardNumber, phoneNo, created } = cursor.value;
 
                 let rowEl = document.createElement("tr");
                 addColumn(rowEl, key)
                 addColumn(rowEl, name)
-                addColumn(rowEl, nip)
+                addColumn(rowEl, nip);
+                addColumn(rowEl, email)
+                addColumn(rowEl, postalCode);
+                addColumn(rowEl, idCardNumber);
+                addColumn(rowEl, phoneNo);
                 addColumn(rowEl, created)
                 renderDeleteButton(rowEl)
                 renderEditButton(rowEl)
@@ -313,8 +334,13 @@
                                         <th>Id</th>
                                         <th>Nazwa</th>
                                         <th>Nip</th>
+                                        <th>Email</th>
+                                        <th>Kod pocztowy</th>
+                                        <th>nr dowodu</th>
+                                        <th>tel</th>
                                         <th>Dodano</th>
                                         <th>Akcja - Usuń</th>
+                                        <th>Akcja - Edytuj</th>
                                     </tr>`
             }
         }

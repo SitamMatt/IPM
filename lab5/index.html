@@ -49,15 +49,15 @@
     
 
     <table id="data-table">
-        <tr>
-            <th>Id</th>
-            <th>Nazwa</th>
-            <th>Nip</th>
-            <th>Email</th>
-            <th>Kod pocztowy</th>
-            <th>nr dowodu</th>
-            <th>tel</th>
-            <th>Dodano</th>
+        <tr id="table-header">
+            <th>Id<br/><input id="search_id" onchange="search();" type="text"></th>
+            <th>Nazwa<br/><input id="search_name" onchange="search();" type="text"></th>
+            <th>Nip<br/><input id="search_nip" onchange="search();" type="text"></th>
+            <th>Email<br/><input id="search_email" onchange="search();" type="text"></th>
+            <th>Kod pocztowy<br/><input id="search_postalCode" onchange="search();" type="text"></th>
+            <th>nr dowodu<br/><input id="search_idCardNumber" onchange="search();" type="text"></th>
+            <th>tel<br/><input id="search_phoneNo" onchange="search();" type="text"></th>
+            <th>Dodano<br/><input id="search_createdDate" onchange="search();" type="text"></th>
             <th>Akcja - Usuń</th>
             <th>Akcja - Edytuj</th>
         </tr>

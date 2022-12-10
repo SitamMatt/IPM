@@ -160,6 +160,10 @@
             renderTable();
         }
 
+        function search(){
+            renderTable();
+        }
+
         function save(contractor){
             var request = db
             .transaction(["contractors"], "readwrite")

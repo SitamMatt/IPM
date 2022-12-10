@@ -358,6 +358,63 @@
                 const key = cursor.key;
                 const { name, nip, email, postalCode, idCardNumber, phoneNo, created } = cursor.value;
 
+                if(id_search !== undefined && id_search !== "" && id_search !== null){
+                    if(key != id_search){
+                        cursor.continue();
+                        return;
+                    }
+                }
+
+                if(name_search !== undefined && name_search !== "" && name_search !== null){
+                    if(name != name_search){
+                        cursor.continue();
+                        return;
+                    }
+                }
+
+                if(nip_search !== undefined && nip_search !== "" && nip_search !== null){
+                    if(nip != nip_search){
+                        cursor.continue();
+                        return;
+                    }
+                }
+
+                
+                if(email_search !== undefined && email_search !== "" && email_search !== null){
+                    if(email != email_search){
+                        cursor.continue();
+                        return;
+                    }
+                }
+
+                if(postalCode_search !== undefined && postalCode_search !== "" && postalCode_search !== null){
+                    if(postalCode != postalCode_search){
+                        cursor.continue();
+                        return;
+                    }
+                }
+
+                if(idCardNumber_search !== undefined && idCardNumber_search !== "" && idCardNumber_search !== null){
+                    if(idCardNumber != idCardNumber_search){
+                        cursor.continue();
+                        return;
+                    }
+                }
+
+                if(phoneNo_search !== undefined && phoneNo_search !== "" && phoneNo_search !== null){
+                    if(phoneNo != phoneNo_search){
+                        cursor.continue();
+                        return;
+                    }
+                }
+
+                if(createdDate_search !== undefined && createdDate_search !== "" && createdDate_search !== null){
+                    if(created != createdDate_search){
+                        cursor.continue();
+                        return;
+                    }
+                }
+
                 let rowEl = document.createElement("tr");
                 addColumn(rowEl, key)
                 addColumn(rowEl, name)

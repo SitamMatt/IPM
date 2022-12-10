@@ -50,14 +50,14 @@
 
     <table id="data-table">
         <tr id="table-header">
-            <th>Id<br/><input id="search_id" onchange="search();" type="text"></th>
-            <th>Nazwa<br/><input id="search_name" onchange="search();" type="text"></th>
-            <th>Nip<br/><input id="search_nip" onchange="search();" type="text"></th>
-            <th>Email<br/><input id="search_email" onchange="search();" type="text"></th>
-            <th>Kod pocztowy<br/><input id="search_postalCode" onchange="search();" type="text"></th>
-            <th>nr dowodu<br/><input id="search_idCardNumber" onchange="search();" type="text"></th>
-            <th>tel<br/><input id="search_phoneNo" onchange="search();" type="text"></th>
-            <th>Dodano<br/><input id="search_createdDate" onchange="search();" type="text"></th>
+            <th>Id<br/><input id="search_id" oninput="search();" type="text"></th>
+            <th>Nazwa<br/><input id="search_name" oninput="search();" type="text"></th>
+            <th>Nip<br/><input id="search_nip" oninput="search();" type="text"></th>
+            <th>Email<br/><input id="search_email" oninput="search();" type="text"></th>
+            <th>Kod pocztowy<br/><input id="search_postalCode" oninput="search();" type="text"></th>
+            <th>nr dowodu<br/><input id="search_idCardNumber" oninput="search();" type="text"></th>
+            <th>tel<br/><input id="search_phoneNo" oninput="search();" type="text"></th>
+            <th>Dodano<br/><input id="search_createdDate" oninput="search();" type="text"></th>
             <th>Akcja - Usuń</th>
             <th>Akcja - Edytuj</th>
         </tr>
@@ -343,10 +343,13 @@
             let phoneNo_search = document.getElementById("search_phoneNo").value;
             let createdDate_search = document.getElementById("search_createdDate").value;
 
-            let header = document.getElementById("table-header");
-            let clone = header.cloneNode(true);
-            table.innerHTML = "";
-            table.appendChild(clone)
+            // let header = document.getElementById("table-header");
+            // let clone = header.cloneNode(true);
+            // table.innerHTML = "";
+            // table.appendChild(clone)
+            let rows = table.querySelectorAll("tr.row")
+            rows.forEach(row => table.removeChild(row));
+            
 
             const objectStore = db.transaction('contractors').objectStore('contractors');
             objectStore.openCursor().onsuccess = (event) => {
@@ -416,6 +419,7 @@
                 }
 
                 let rowEl = document.createElement("tr");
+                rowEl.classList.add("row")
                 addColumn(rowEl, key)
                 addColumn(rowEl, name)
                 addColumn(rowEl, nip);

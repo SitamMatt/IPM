@@ -334,8 +334,19 @@
         }
 
         function renderTable(){
-            table.innerHTML = ""
-            renderHeader(table)
+            let id_search = document.getElementById("search_id").value;
+            let name_search = document.getElementById("search_name").value;
+            let nip_search = document.getElementById("search_nip").value;
+            let email_search = document.getElementById("search_email").value;
+            let postalCode_search = document.getElementById("search_postalCode").value;
+            let idCardNumber_search = document.getElementById("search_idCardNumber").value;
+            let phoneNo_search = document.getElementById("search_phoneNo").value;
+            let createdDate_search = document.getElementById("search_createdDate").value;
+
+            let header = document.getElementById("table-header");
+            let clone = header.cloneNode(true);
+            table.innerHTML = "";
+            table.appendChild(clone)
 
             const objectStore = db.transaction('contractors').objectStore('contractors');
             objectStore.openCursor().onsuccess = (event) => {

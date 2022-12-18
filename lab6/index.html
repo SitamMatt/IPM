@@ -79,18 +79,7 @@
     <button onclick="empty()">Wyczyść</button>
     <button onclick="generateRandom()">Wygeneruj 10 rekordów</button>
 
-    <div id="edit-form-wrapper">
-        <form id="edit-form" onsubmit="return edit(event)" hidden>
-            Nazwa: <input type="text">
-            Nip: <input type="text" pattern="[0-9]{3}-[0-9]{3}-[0-9]{2}-[0-9]{2}">
-            Email: <input type="email">
-            Kod pocztowy: <input type="text" pattern="[0-9]{2}-[0-9]{3}">
-            nr dowodu: <input type="text" pattern="[A-Z]{3}[0-9]{6}">
-            tel: <input type="tel">
-            <input type="hidden">
-            <input type="submit" value="Aktualizuj">
-        </form>
-    </div>
+
 
     <script>
         window.indexedDB =

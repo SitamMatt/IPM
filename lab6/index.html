@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab5</title>
+</head>
+<style>
+    #add-form-wrapper{
+        border: 1px solid black;
+    }
+
+    #data-table{
+        border: 1px solid black;
+    }
+    #edit-form-wrapper{
+        border: 1px solid black;
+    }
+
+    input:invalid{
+        border-color: red;
+    }
+
+    input:valid{
+        border-color: green;
+    }
+
+    th > input{
+        width: 100%;
+        box-sizing: border-box;
+    }
+</style>
+<body>
+    <h1>Baza kontrehentów (Przy filtrowaniu wyników wyszukiwania można używać '*')</h1>
+
+    <div id="add-form-wrapper">
+        <form id="add-form" onsubmit="return add(event)">
+            Nazwa: <input id="" type="text"><br>
+            Nip: <input type="text" pattern="[0-9]{3}-[0-9]{3}-[0-9]{2}-[0-9]{2}"><br>
+            Email: <input type="email"><br>
+            Kod pocztowy: <input type="text" pattern="[0-9]{2}-[0-9]{3}"><br>
+            nr dowodu: <input type="text" pattern="[A-Z]{3}[0-9]{6}"><br>
+            tel: <input type="tel"><br>
+            <input type="submit" value="Dodaj">
+        </form>
+       
+    </div>
+    
+
+    <table id="data-table">
+        <tr id="table-header">
+            <th>Id<br/><input id="search_id" oninput="search();" type="text"></th>
+            <th>Nazwa<br/><input id="search_name" oninput="search();" type="text"></th>
+            <th>Nip<br/><input id="search_nip" oninput="search();" type="text"></th>
+            <th>Email<br/><input id="search_email" oninput="search();" type="text"></th>
+            <th>Kod pocztowy<br/><input id="search_postalCode" oninput="search();" type="text"></th>
+            <th>nr dowodu<br/><input id="search_idCardNumber" oninput="search();" type="text"></th>
+            <th>tel<br/><input id="search_phoneNo" oninput="search();" type="text"></th>
+            <th>Dodano<br/><input id="search_createdDate" oninput="search();" type="text"></th>
+            <th>Akcja - Usuń</th>
+            <th>Akcja - Edytuj</th>
+        </tr>
+    </table>
+
+    <button onclick="empty()">Wyczyść</button>
+    <button onclick="generateRandom()">Wygeneruj 10 rekordów</button>
+
+    <div id="edit-form-wrapper">
+        <form id="edit-form" onsubmit="return edit(event)" hidden>
+            Nazwa: <input type="text">
+            Nip: <input type="text" pattern="[0-9]{3}-[0-9]{3}-[0-9]{2}-[0-9]{2}">
+            Email: <input type="email">
+            Kod pocztowy: <input type="text" pattern="[0-9]{2}-[0-9]{3}">
+            nr dowodu: <input type="text" pattern="[A-Z]{3}[0-9]{6}">
+            tel: <input type="tel">
+            <input type="hidden">
+            <input type="submit" value="Aktualizuj">
+        </form>
+    </div>
+
+    <script>
+        window.indexedDB =
+            window.indexedDB ||
+            window.mozIndexedDB ||
+            window.webkitIndexedDB ||
+            window.msIndexedDB;
+
+        window.IDBTransaction =
+            window.IDBTransaction ||
+            window.webkitIDBTransaction ||
+            window.msIDBTransaction;
+        window.IDBKeyRange =
+            window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
+
+        if (!window.indexedDB) {
+            window.alert(
+            "Your browser doesn't support a stable version of IndexedDB."
+            );
+        }
+
+        let db;
+        let request = window.indexedDB.open("newDatabase", 1);
+
+        request.onerror = function (event) {
+            alert("error: The database is opened failed");
+        };
+
+        request.onsuccess = function (event) {
+            db = request.result;
+            alert("success: The database " + db + " is opened successfully");
+
+            renderTable();
+        };
+
+        request.onupgradeneeded = function (event) {
+            var db = event.target.result;
+            var objectStore = db.createObjectStore("contractors", {
+                autoIncrement: true,
+            });
+
+            objectStore.createIndex("name", "name", { unique: false });
+            objectStore.createIndex("nip", "nip", { unique: true });
+            objectStore.createIndex("email", "email", { unique: true });
+            objectStore.createIndex("postalCode", "postalCode", {unique: false});
+            objectStore.createIndex("idCardNumber", "idCardNumber", {unique: true});
+            objectStore.createIndex("phoneNo", "phoneNo", {unique: true});
+            objectStore.createIndex("created", "created", { unique: false });
+        };
+
+
+        const btn = document.getElementById("add-btn");
+        const table = document.getElementById("data-table");
+
+        function random(from, to){
+            return Math.floor(Math.random() * to + from);
+        }
+
+        function randomString(length, chars) {
+            var result = '';
+            for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+            return result;
+        }
+
+        function generateRandom(){
+            const count = 10;
+
+            for(i = 0; i < count; i++){
+                contractor = {};
+                contractor.name = randomNames[random(0, 12)];
+                contractor.email = contractor.name.toLowerCase() + '@' + randomString(2, chars) + '.pl';
+                contractor.nip = randomString(3, numbers) + "-" + randomString(3, numbers) + "-" + randomString(2, numbers) + "-" + randomString(2, numbers);
+                contractor.postalCode = randomString(2, numbers) + "-" + randomString(3, numbers);
+                contractor.idCardNumber = randomString(3, chars.toUpperCase()) + randomString(6, numbers);
+                contractor.phoneNo = randomString(3, numbers) + "-" + randomString(3, numbers) + "-" + randomString(3, numbers);
+                contractor.created = new Date();
+                save(contractor);
+            }
+
+            renderTable();
+        }
+
+        function search(){
+            renderTable();
+        }
+
+        function save(contractor){
+            var request = db
+            .transaction(["contractors"], "readwrite")
+            .objectStore("contractors")
+            .add(contractor);
+
+            request.onsuccess = function (event) {
+            };
+
+            request.onerror = function (event) {
+
+            };
+        }
+
+        function edit(ev){
+            ev.preventDefault();
+
+            let form = document.getElementById("edit-form");
+
+            let contractor = {
+                name: form[0].value,
+                nip: form[1].value,
+                email: form[2].value,
+                postalCode: form[3].value,
+                idCardNumber: form[4].value,
+                phoneNo: form[5].value,
+                created: new Date()
+            }
+
+            let key = Number(form[6].value)
+
+            const objectStore = db.transaction(["contractors"], "readwrite").objectStore('contractors');
+            objectStore.openCursor().onsuccess = (event) => {
+                const cursor = event.target.result;
+                
+                if (!cursor) {
+                    return;
+                }
+
+                if(key === cursor.key){
+                    cursor.value.name = contractor.name
+                    cursor.value.nip = contractor.nip
+                    let req = cursor.update(cursor.value)
+                    req.onsuccess = () => {
+                        alert("Zaktualizowano użytkownika")
+                    };
+                }
+
+                cursor.continue();
+            };
+
+            form.setAttribute("hidden", true)
+
+            renderTable()
+        }
+
+        function renderEditForm(ev){
+            const wrapper = document.getElementById("edit-form-wrapper");
+
+            let btnEl = ev.target;
+            let colEl = btnEl.parentElement;
+            let rowEl = colEl.parentElement;
+
+            let key = rowEl.firstChild.innerText
+
+            var request = db
+            .transaction(["contractors"], "readwrite")
+            .objectStore("contractors")
+            .get(Number(key))
+
+            request.onsuccess = function (event) {
+                let result = request.result;
+                let form = document.getElementById("edit-form");
+
+                form.removeAttribute("hidden")
+
+                form[0].value = result.name
+                form[1].value = result.nip,
+                form[2].value = result.email,
+                form[3].value = result.postalCode,
+                form[4].value = result.idCardNumber,
+                form[5].value = result.phoneNo,
+                form[6].value = key
+            };
+
+            request.onerror = function (event) {
+                alert(
+                    "Unable to add data\r\ user with that email aready exist in your database! "
+                );
+            };
+
+           
+
+        }
+
+        function empty(){
+            var request = db
+            .transaction(["contractors"], "readwrite")
+            .objectStore("contractors")
+            .clear()
+
+            request.onsuccess = function (event) {
+                alert("Wyczyszczono bazę")
+                renderTable();
+            };
+
+            request.onerror = function (event) {
+                alert(
+                    "Error"
+                );
+            };
+        }
+
+        function add(ev){
+            ev.preventDefault();
+
+            let form = document.getElementById("add-form");
+
+            let contractor = {
+                name: form[0].value,
+                nip: form[1].value,
+                email: form[2].value,
+                postalCode: form[3].value,
+                idCardNumber: form[4].value,
+                phoneNo: form[5].value,
+                created: new Date()
+            }
+
+            var request = db
+            .transaction(["contractors"], "readwrite")
+            .objectStore("contractors")
+            .add(contractor);
+
+            request.onsuccess = function (event) {
+                alert("Dodano użytkownika")
+                renderTable();
+            };
+
+            request.onerror = function (event) {
+                alert(
+                    "Error"
+                );
+            };
+        }
+
+        function remove(ev){
+            let btnEl = ev.target;
+            let colEl = btnEl.parentElement;
+            let rowEl = colEl.parentElement;
+
+            let key = rowEl.firstChild.innerText
+
+            var request = db
+            .transaction(["contractors"], "readwrite")
+            .objectStore("contractors")
+            .delete(Number(key))
+
+            request.onsuccess = function (event) {
+                alert("Usunięto uzytkownika")
+                renderTable();
+            };
+
+            request.onerror = function (event) {
+                alert(
+                    "Error"
+                );
+            };
+        }
+
+        function renderTable(){
+            let id_search = document.getElementById("search_id").value;
+            let name_search = document.getElementById("search_name").value;
+            let nip_search = document.getElementById("search_nip").value;
+            let email_search = document.getElementById("search_email").value;
+            let postalCode_search = document.getElementById("search_postalCode").value;
+            let idCardNumber_search = document.getElementById("search_idCardNumber").value;
+            let phoneNo_search = document.getElementById("search_phoneNo").value;
+            let createdDate_search = document.getElementById("search_createdDate").value;
+
+            // let header = document.getElementById("table-header");
+            // let clone = header.cloneNode(true);
+            // table.innerHTML = "";
+            // table.appendChild(clone)
+            let rows = table.querySelectorAll("tr.row")
+            // rows.forEach(row => table.removeChild(row));
+            let rowIterator = 0;
+            let rerender = true;
+            
+
+            const objectStore = db.transaction('contractors').objectStore('contractors');
+            objectStore.openCursor().onsuccess = (event) => {
+                const cursor = event.target.result;
+                if (!cursor) {
+                    return;
+                }
+
+                const key = cursor.key;
+                const { name, nip, email, postalCode, idCardNumber, phoneNo, created } = cursor.value;
+
+                if(id_search !== undefined && id_search !== "" && id_search !== null){
+                    if(!wildTest(id_search, key)){
+                        cursor.continue();
+                        return;
+                    }
+                }
+
+                if(name_search !== undefined && name_search !== "" && name_search !== null){
+                    if(!wildTest(name_search, name)){
+                        cursor.continue();
+                        return;
+                    }
+                }
+
+                if(nip_search !== undefined && nip_search !== "" && nip_search !== null){
+                    if(!wildTest(nip_search, nip)){
+                        cursor.continue();
+                        return;
+                    }
+                }
+
+                
+                if(email_search !== undefined && email_search !== "" && email_search !== null){
+                    if(!wildTest(email_search, email)){
+                        cursor.continue();
+                        return;
+                    }
+                }
+
+                if(postalCode_search !== undefined && postalCode_search !== "" && postalCode_search !== null){
+                    if(!wildTest(postalCode_search, postalCode)){
+                        cursor.continue();
+                        return;
+                    }
+                }
+
+                if(idCardNumber_search !== undefined && idCardNumber_search !== "" && idCardNumber_search !== null){
+                    if(!wildTest(idCardNumber_search, idCardNumber)){
+                        cursor.continue();
+                        return;
+                    }
+                }
+
+                if(phoneNo_search !== undefined && phoneNo_search !== "" && phoneNo_search !== null){
+                    if(!wildTest(phoneNo_search, phoneNo)){
+                        cursor.continue();
+                        return;
+                    }
+                }
+
+                if(createdDate_search !== undefined && createdDate_search !== "" && createdDate_search !== null){
+                    if(!wildTest(createdDate_search, created)){
+                        cursor.continue();
+                        return;
+                    }
+                }
+
+                let prevKey = rowEl.firstChild.innerText;
+
+                // if(rerender === true && key != prevKey){
+                    // rerender = false;
+
+                    // table.removeChild(rows[rowIterator]);
+
+                rowIterator++;
+
+                let rowEl = document.createElement("tr");
+                rowEl.classList.add("row")
+                addColumn(rowEl, key);
+                addColumn(rowEl, name);
+                addColumn(rowEl, nip);
+                addColumn(rowEl, email)
+                addColumn(rowEl, postalCode);
+                addColumn(rowEl, idCardNumber);
+                addColumn(rowEl, phoneNo);
+                addColumn(rowEl, created)
+                renderDeleteButton(rowEl)
+                renderEditButton(rowEl)
+
+                table.appendChild(rowEl)
+
+                cursor.continue();
+                // }
+
+                
+            };
+
+            function addColumn(row, value){
+                let col = document.createElement("td");
+                col.innerText = value
+                row.appendChild(col)
+            }
+
+            function renderDeleteButton(rowEl){
+                let html = `<button onclick="remove(event)">Usuń</button>`;
+                let el = document.createElement("td");
+                el.innerHTML = html;
+                rowEl.appendChild(el)
+            }
+
+            function renderEditButton(rowEl){
+                let html = `<button onclick="renderEditForm(event)">Edytuj</button>`;
+                let el = document.createElement("td");
+                el.innerHTML = html;
+                rowEl.appendChild(el)
+            }
+
+            function renderHeader(table){
+                table.innerHTML = `<tr>
+                                    <th>Id<br/><input id="search_id" onchange="search();" type="text"></th>
+                                    <th>Nazwa<br/><input id="search_name" onchange="search();" type="text"></th>
+                                    <th>Nip<br/><input id="search_nip" onchange="search();" type="text"></th>
+                                    <th>Email<br/><input id="search_email" onchange="search();" type="text"></th>
+                                    <th>Kod pocztowy<br/><input id="search_postalCode" onchange="search();" type="text"></th>
+                                    <th>nr dowodu<br/><input id="search_idCardNumber" onchange="search();" type="text"></th>
+                                    <th>tel<br/><input id="search_phoneNo" onchange="search();" type="text"></th>
+                                    <th>Dodano<br/><input id="search_createdDate" onchange="search();" type="text"></th>
+                                    <th>Akcja - Usuń</th>
+                                    <th>Akcja - Edytuj</th>
+                                </tr>`
+            }
+        }
+
+        function wildTest(wildcard, str) {
+            let w = wildcard.replace(/[.+^${}()|[\]\\]/g, '\\$&'); // regexp escape 
+            const re = new RegExp(`^${w.replace(/\*/g,'.*').replace(/\?/g,'.')}$`,'i');
+            return re.test(str);
+        }
+
+        const chars = "abcdefghijklmnopqrstuvwxyz";
+        const numbers = "0123456789";
+
+        const randomNames = [
+            "Mariusz",
+            "Bartosz",
+            "Adam",
+            "Alan",
+            "Anton",
+            "Włodzimierz",
+            "Marianna",
+            "Katarzyna",
+            "Barbara",
+            "Maria",
+            "Dominika",
+            "Ofelia"
+        ];
+
+    </script>
+</body>
+</html>

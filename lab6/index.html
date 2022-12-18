@@ -150,7 +150,7 @@
             for(i = 0; i < count; i++){
                 contractor = {};
                 contractor.name = randomNames[random(0, 12)];
-                contractor.email = contractor.name.toLowerCase() + '@' + randomString(2, chars) + '.pl';
+                contractor.email = correctPolishLetters(contractor.name.toLowerCase()) + '@' + randomString(2, chars) + '.pl';
                 contractor.nip = randomString(3, numbers) + "-" + randomString(3, numbers) + "-" + randomString(2, numbers) + "-" + randomString(2, numbers);
                 contractor.postalCode = randomString(2, numbers) + "-" + randomString(3, numbers);
                 contractor.idCardNumber = randomString(3, chars.toUpperCase()) + randomString(6, numbers);
@@ -160,6 +160,39 @@
             }
 
             renderTable();
+        }
+
+        function correctPolishLetters(inputString) {
+            // mapping for characters
+            const mapping = {
+                ą: "a",
+                ć: "c",
+                ę: "e",
+                ł: "l",
+                ń: "n",
+                ó: "o",
+                ś: "s",
+                ź: "z",
+                ż: "z",
+            };
+
+            // variable to save result
+            let withoutDiacritics = "";
+
+            // loop over every number
+            for (const char of inputString) {
+                // check if mapping has a key with the current character
+                if (Object.keys(mapping).includes(char)) {
+                withoutDiacritics += mapping[char];
+                // if yes, return its replacement
+                } else {
+                // if not, return it unchanged
+                withoutDiacritics += char;
+                }
+            }
+
+            // return result
+            return withoutDiacritics;
         }
 
         function search(){

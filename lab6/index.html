@@ -502,40 +502,42 @@
                 
             };
 
-            function addColumn(row, value){
-                let col = document.createElement("td");
-                col.innerText = value
-                row.appendChild(col)
-            }
+            
+        }
 
-            function renderDeleteButton(rowEl){
-                let html = `<button onclick="remove(event)">Usuń</button>`;
-                let el = document.createElement("td");
-                el.innerHTML = html;
-                rowEl.appendChild(el)
-            }
+        function addColumn(row, value){
+            let col = document.createElement("td");
+            col.innerText = value
+            row.appendChild(col)
+        }
 
-            function renderEditButton(rowEl){
-                let html = `<button onclick="renderEditForm(event)">Edytuj</button>`;
-                let el = document.createElement("td");
-                el.innerHTML = html;
-                rowEl.appendChild(el)
-            }
+        function renderDeleteButton(rowEl){
+            let html = `<button onclick="remove(event)">Usuń</button>`;
+            let el = document.createElement("td");
+            el.innerHTML = html;
+            rowEl.appendChild(el)
+        }
 
-            function renderHeader(table){
-                table.innerHTML = `<tr>
-                                    <th>Id<br/><input id="search_id" onchange="search();" type="text"></th>
-                                    <th>Nazwa<br/><input id="search_name" onchange="search();" type="text"></th>
-                                    <th>Nip<br/><input id="search_nip" onchange="search();" type="text"></th>
-                                    <th>Email<br/><input id="search_email" onchange="search();" type="text"></th>
-                                    <th>Kod pocztowy<br/><input id="search_postalCode" onchange="search();" type="text"></th>
-                                    <th>nr dowodu<br/><input id="search_idCardNumber" onchange="search();" type="text"></th>
-                                    <th>tel<br/><input id="search_phoneNo" onchange="search();" type="text"></th>
-                                    <th>Dodano<br/><input id="search_createdDate" onchange="search();" type="text"></th>
-                                    <th>Akcja - Usuń</th>
-                                    <th>Akcja - Edytuj</th>
-                                </tr>`
-            }
+        function renderEditButton(rowEl){
+            let html = `<button onclick="renderEditForm(event)">Edytuj</button>`;
+            let el = document.createElement("td");
+            el.innerHTML = html;
+            rowEl.appendChild(el)
+        }
+
+        function renderHeader(table){
+            table.innerHTML = `<tr>
+                                <th>Id<br/><input id="search_id" onchange="search();" type="text"></th>
+                                <th>Nazwa<br/><input id="search_name" onchange="search();" type="text"></th>
+                                <th>Nip<br/><input id="search_nip" onchange="search();" type="text"></th>
+                                <th>Email<br/><input id="search_email" onchange="search();" type="text"></th>
+                                <th>Kod pocztowy<br/><input id="search_postalCode" onchange="search();" type="text"></th>
+                                <th>nr dowodu<br/><input id="search_idCardNumber" onchange="search();" type="text"></th>
+                                <th>tel<br/><input id="search_phoneNo" onchange="search();" type="text"></th>
+                                <th>Dodano<br/><input id="search_createdDate" onchange="search();" type="text"></th>
+                                <th>Akcja - Usuń</th>
+                                <th>Akcja - Edytuj</th>
+                            </tr>`
         }
 
         function wildTest(wildcard, str) {

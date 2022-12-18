@@ -94,21 +94,21 @@
             window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
 
         if (!window.indexedDB) {
-            window.alert(
-            "Your browser doesn't support a stable version of IndexedDB."
-            );
+            // window.alert(
+            // "Your browser doesn't support a stable version of IndexedDB."
+            // );
         }
 
         let db;
         let request = window.indexedDB.open("newDatabase", 1);
 
         request.onerror = function (event) {
-            alert("error: The database is opened failed");
+            // alert("error: The database is opened failed");
         };
 
         request.onsuccess = function (event) {
             db = request.result;
-            alert("success: The database " + db + " is opened successfully");
+            // alert("success: The database " + db + " is opened successfully");
 
             renderTable();
         };
@@ -208,7 +208,7 @@
                     cursor.value.nip = contractor.nip
                     let req = cursor.update(cursor.value)
                     req.onsuccess = () => {
-                        alert("Zaktualizowano użytkownika")
+                        // alert("Zaktualizowano użytkownika")
                     };
                 }
 
@@ -250,9 +250,9 @@
             };
 
             request.onerror = function (event) {
-                alert(
-                    "Unable to add data\r\ user with that email aready exist in your database! "
-                );
+                // alert(
+                //     "Unable to add data\r\ user with that email aready exist in your database! "
+                // );
             };
 
            
@@ -266,14 +266,14 @@
             .clear()
 
             request.onsuccess = function (event) {
-                alert("Wyczyszczono bazę")
+                // alert("Wyczyszczono bazę")
                 renderTable();
             };
 
             request.onerror = function (event) {
-                alert(
-                    "Error"
-                );
+                // alert(
+                //     "Error"
+                // );
             };
         }
 
@@ -298,14 +298,14 @@
             .add(contractor);
 
             request.onsuccess = function (event) {
-                alert("Dodano użytkownika")
+                // alert("Dodano użytkownika")
                 renderTable();
             };
 
             request.onerror = function (event) {
-                alert(
-                    "Error"
-                );
+                // alert(
+                //     "Error"
+                // );
             };
         }
 
@@ -322,7 +322,7 @@
             .delete(Number(key))
 
             request.onsuccess = function (event) {
-                alert("Usunięto uzytkownika")
+                // alert("Usunięto uzytkownika")
                 renderTable();
             };
 
@@ -348,7 +348,7 @@
             // table.innerHTML = "";
             // table.appendChild(clone)
             let rows = table.querySelectorAll("tr.row")
-            // rows.forEach(row => table.removeChild(row));
+            rows.forEach(row => table.removeChild(row));
             let rowIterator = 0;
             let rerender = true;
             
@@ -364,21 +364,22 @@
                 const { name, nip, email, postalCode, idCardNumber, phoneNo, created } = cursor.value;
 
                 if(id_search !== undefined && id_search !== "" && id_search !== null){
-                    if(!wildTest(id_search, key)){
+                    if(!filter(id_search, key)){
                         cursor.continue();
                         return;
                     }
                 }
 
                 if(name_search !== undefined && name_search !== "" && name_search !== null){
-                    if(!wildTest(name_search, name)){
+                    if(!filter(name_search, name)){
+                        console.log(name_search, name)
                         cursor.continue();
                         return;
                     }
                 }
 
                 if(nip_search !== undefined && nip_search !== "" && nip_search !== null){
-                    if(!wildTest(nip_search, nip)){
+                    if(!filter(nip_search, nip)){
                         cursor.continue();
                         return;
                     }
@@ -386,48 +387,48 @@
 
                 
                 if(email_search !== undefined && email_search !== "" && email_search !== null){
-                    if(!wildTest(email_search, email)){
+                    if(!filter(email_search, email)){
                         cursor.continue();
                         return;
                     }
                 }
 
                 if(postalCode_search !== undefined && postalCode_search !== "" && postalCode_search !== null){
-                    if(!wildTest(postalCode_search, postalCode)){
+                    if(!filter(postalCode_search, postalCode)){
                         cursor.continue();
                         return;
                     }
                 }
 
                 if(idCardNumber_search !== undefined && idCardNumber_search !== "" && idCardNumber_search !== null){
-                    if(!wildTest(idCardNumber_search, idCardNumber)){
+                    if(!filter(idCardNumber_search, idCardNumber)){
                         cursor.continue();
                         return;
                     }
                 }
 
                 if(phoneNo_search !== undefined && phoneNo_search !== "" && phoneNo_search !== null){
-                    if(!wildTest(phoneNo_search, phoneNo)){
+                    if(!filter(phoneNo_search, phoneNo)){
                         cursor.continue();
                         return;
                     }
                 }
 
                 if(createdDate_search !== undefined && createdDate_search !== "" && createdDate_search !== null){
-                    if(!wildTest(createdDate_search, created)){
+                    if(!filter(createdDate_search, created)){
                         cursor.continue();
                         return;
                     }
                 }
 
-                let prevKey = rowEl.firstChild.innerText;
+                // let prevKey = rowEl.firstChild.innerText;
 
                 // if(rerender === true && key != prevKey){
                     // rerender = false;
 
                     // table.removeChild(rows[rowIterator]);
 
-                rowIterator++;
+                // rowIterator++;
 
                 let rowEl = document.createElement("tr");
                 rowEl.classList.add("row")
@@ -490,6 +491,15 @@
             let w = wildcard.replace(/[.+^${}()|[\]\\]/g, '\\$&'); // regexp escape 
             const re = new RegExp(`^${w.replace(/\*/g,'.*').replace(/\?/g,'.')}$`,'i');
             return re.test(str);
+        }
+
+        function filter(match, str){
+            if((String(match).toLowerCase() == String(str).toLowerCase())){
+                return true;
+            }else if(String(str).toLowerCase().includes(match.toLowerCase())){
+                return true;
+            }
+            return false;
         }
 
         const chars = "abcdefghijklmnopqrstuvwxyz";

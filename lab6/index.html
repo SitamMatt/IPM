@@ -241,6 +241,11 @@
                 if(key === cursor.key){
                     cursor.value.name = contractor.name
                     cursor.value.nip = contractor.nip
+                    cursor.value.email = contractor.email
+                    cursor.value.postalCode = contractor.postalCode
+                    cursor.value.idCardNumber = contractor.idCardNumber
+                    cursor.value.phoneNo = contractor.phoneNo
+
                     let req = cursor.update(cursor.value)
                     req.onsuccess = () => {
                         // alert("Zaktualizowano użytkownika")

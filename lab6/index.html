@@ -322,6 +322,7 @@
 
             let form = document.getElementById("add-form");
 
+
             let contractor = {
                 name: form[0].value,
                 nip: form[1].value,
@@ -331,6 +332,16 @@
                 phoneNo: form[5].value,
                 created: new Date()
             }
+
+            if((contractor.name != "" || contractor.name != undefined)
+             || (contractor.nip != "" || contractor.nip != undefined)
+             || (contractor.email != "" || contractor.email != undefined)
+             || (contractor.postalCode != "" || contractor.postalCode != undefined)
+             || (contractor.idCardNumber != "" || contractor.idCardNumber != undefined)
+             || (contractor.phoneNo != "" || contractor.phoneNo != undefined)){
+                alert("Wypełnij poprawnie formularz");
+                return;
+             }
 
             var request = db
             .transaction(["contractors"], "readwrite")

@@ -333,12 +333,12 @@
                 created: new Date()
             }
 
-            if((contractor.name != "" || contractor.name != undefined)
-             || (contractor.nip != "" || contractor.nip != undefined)
-             || (contractor.email != "" || contractor.email != undefined)
-             || (contractor.postalCode != "" || contractor.postalCode != undefined)
-             || (contractor.idCardNumber != "" || contractor.idCardNumber != undefined)
-             || (contractor.phoneNo != "" || contractor.phoneNo != undefined)){
+            if((contractor.name == "" || contractor.name == undefined)
+             || (contractor.nip == "" || contractor.nip == undefined)
+             || (contractor.email == "" || contractor.email == undefined)
+             || (contractor.postalCode == "" || contractor.postalCode == undefined)
+             || (contractor.idCardNumber == "" || contractor.idCardNumber == undefined)
+             || (contractor.phoneNo == "" || contractor.phoneNo == undefined)){
                 alert("Wypełnij poprawnie formularz");
                 return;
              }
